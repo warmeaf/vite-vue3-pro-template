@@ -1,11 +1,11 @@
 <template>
   <div class="content">
-    <header-area />
+    <app-header />
   </div>
 </template>
 
 <script setup>
-import HeaderArea from "./components/HeaderArea";
+import AppHeader from "./components/common/app-header.vue";
 </script>
 
 <style scoped>
