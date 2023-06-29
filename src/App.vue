@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import AppHeader from "./components/common/app-header.vue";
+import AppHeader from './components/common/app-header.vue'
 </script>
 
 <style scoped>
@@ -13,5 +13,8 @@ import AppHeader from "./components/common/app-header.vue";
   width: 1020px;
   padding: 0 20px;
   margin: 0 auto;
+}
+
+div {
 }
 </style>
