@@ -2,15 +2,15 @@
 
 ## 目录
 
--   [模板技术栈](#模板技术栈)
--   [项目配置](#项目配置)
-    -   [配置eslint](#配置eslint)
-    -   [配置prettier](#配置prettier)
-    -   [配置stylelint](#配置stylelint)
-    -   [配置husky](#配置husky)
-    -   [配置commitlint](#配置commitlint)
-    -   [强制使用pnpm包管理器工具](#强制使用pnpm包管理器工具)
--   [参考](#参考)
+- [模板技术栈](#模板技术栈)
+- [项目配置](#项目配置)
+  - [配置 eslint](#配置eslint)
+  - [配置 prettier](#配置prettier)
+  - [配置 stylelint](#配置stylelint)
+  - [配置 husky](#配置husky)
+  - [配置 commitlint](#配置commitlint)
+  - [强制使用 pnpm 包管理器工具](#强制使用pnpm包管理器工具)
+- [参考](#参考)
 
 ### 模板技术栈
 
@@ -21,9 +21,9 @@
 
 ### 项目配置
 
-#### 配置eslint
+#### 配置 eslint
 
-ESLint最初是由[Nicholas C. Zakas](http://nczonline.net/ "Nicholas C. Zakas") 于2013年6月创建的开源项目。它的目标是提供一个插件化的**javascript代码检测工具**
+ESLint 最初是由[Nicholas C. Zakas](http://nczonline.net/ 'Nicholas C. Zakas') 于 2013 年 6 月创建的开源项目。它的目标是提供一个插件化的**javascript 代码检测工具**
 
 首先安装`eslint`
 
@@ -41,43 +41,38 @@ npx eslint --init
 
 ```javascript
 module.exports = {
-   //运行环境
-    "env": { 
-        "browser": true,//浏览器端
-        "es2021": true,//es2021
-    },
-    //规则继承
-    "extends": [ 
-       //全部规则默认是关闭的,这个配置项开启推荐规则,推荐规则参照文档
-       //比如:函数不能重名、对象不能出现重复key
-        "eslint:recommended",
-        //vue3语法规则
-        "plugin:vue/vue3-essential",
-        //ts语法规则
-        "plugin:@typescript-eslint/recommended"
-    ],
-    //要为特定类型的文件指定处理器
-    "overrides": [
-    ],
-    //指定解析器:解析器
-    //Esprima 默认解析器
-    //Babel-ESLint babel解析器
-    //@typescript-eslint/parser ts解析器
-    "parser": "@typescript-eslint/parser",
-    //指定解析器选项
-    "parserOptions": {
-        "ecmaVersion": "latest",//校验ECMA最新版本
-        "sourceType": "module"//设置为"script"（默认），或者"module"代码在ECMAScript模块中
-    },
-    //ESLint支持使用第三方插件。在使用插件之前，您必须使用npm安装它
-    //该eslint-plugin-前缀可以从插件名称被省略
-    "plugins": [
-        "vue",
-        "@typescript-eslint"
-    ],
-    //eslint规则
-    "rules": {
-    }
+  //运行环境
+  env: {
+    browser: true, //浏览器端
+    es2021: true, //es2021
+  },
+  //规则继承
+  extends: [
+    //全部规则默认是关闭的,这个配置项开启推荐规则,推荐规则参照文档
+    //比如:函数不能重名、对象不能出现重复key
+    'eslint:recommended',
+    //vue3语法规则
+    'plugin:vue/vue3-essential',
+    //ts语法规则
+    'plugin:@typescript-eslint/recommended',
+  ],
+  //要为特定类型的文件指定处理器
+  overrides: [],
+  //指定解析器:解析器
+  //Esprima 默认解析器
+  //Babel-ESLint babel解析器
+  //@typescript-eslint/parser ts解析器
+  parser: '@typescript-eslint/parser',
+  //指定解析器选项
+  parserOptions: {
+    ecmaVersion: 'latest', //校验ECMA最新版本
+    sourceType: 'module', //设置为"script"（默认），或者"module"代码在ECMAScript模块中
+  },
+  //ESLint支持使用第三方插件。在使用插件之前，您必须使用npm安装它
+  //该eslint-plugin-前缀可以从插件名称被省略
+  plugins: ['vue', '@typescript-eslint'],
+  //eslint规则
+  rules: {},
 }
 ```
 
@@ -207,7 +202,7 @@ pnpm install -D eslint-plugin-prettier prettier eslint-config-prettier
   }
 ```
 
-#### 配置stylelint
+#### 配置 stylelint
 
 `stylelint`为`css`的`lint`工具。可格式化`css`代码，检查`css`语法错误与不合理的写法，指定`css`书写顺序等。
 
@@ -292,7 +287,7 @@ module.exports = {
 }
 ```
 
-#### 配置husky
+#### 配置 husky
 
 在上面我们已经集成好了我们代码校验工具，但是需要每次手动的去执行命令才会格式化我们的代码。如果有人没有格式化就提交了远程仓库中，那这个规范就没什么用。所以我们需要强制让开发人员按照代码规范来提交。
 
@@ -322,7 +317,7 @@ pnpm run format
 
 当我们对代码进行`commit`操作的时候，就会执行命令，对代码进行格式化，然后再提交。
 
-#### 配置commitlint
+#### 配置 commitlint
 
 对于我们的`commit`信息，也是有统一规范的，不能随便写,要让每个人都按照统一的标准来执行，我们可以利用\*\*`commitlint`\*\*来实现。
 
@@ -380,7 +375,7 @@ module.exports = {
 
 ```javascript
 'feat',//新特性、新功能
-'fix',//修改bug  
+'fix',//修改bug
 'docs',//文档修改
 'style',//代码格式修改, 注意不是 css 修改
 'refactor',//代码重构
@@ -391,13 +386,13 @@ module.exports = {
 'build',//编译相关的修改，例如发布版本、对项目构建或者依赖的改动
 ```
 
-配置husky
+配置 husky
 
 ```javascript
 npx husky add .husky/commit-msg
 ```
 
-在生成的commit-msg文件中添加下面的命令
+在生成的 commit-msg 文件中添加下面的命令
 
 ```javascript
 #!/usr/bin/env sh
@@ -407,7 +402,7 @@ pnpm commitlint
 
 当我们 `commit `提交信息时，就不能再随意写了，必须是 `git commit -m 'fix: xxx'` 符合类型的才可以，需要注意的是类型的后面需要用英文的 `:`，并且冒号后面是需要空一格的，这个是不能省略的。
 
-#### 强制使用pnpm包管理器工具
+#### 强制使用 pnpm 包管理器工具
 
 团队开发项目的时候，需要统一包管理器工具,因为不同包管理器工具下载同一个依赖,可能版本不一样,
 
@@ -431,5 +426,5 @@ pnpm install -D only-allow
 
 ### 参考
 
-1.  [📖 Linter的故事 | Linter上手完全指南 (yanhaixiang.com)](https://github.yanhaixiang.com/linter-tutorial/theory/history.html#stylelint "📖 Linter的故事 | Linter上手完全指南 (yanhaixiang.com)")
-2.  [vue3\_admin\_template: 此仓库即为贾成豪老师源码仓库 (gitee.com)](https://gitee.com/jch1011/vue3_admin_template-bj1 "vue3_admin_template: 此仓库即为贾成豪老师源码仓库 (gitee.com)")
+1.  [📖 Linter 的故事 | Linter 上手完全指南 (yanhaixiang.com)](https://github.yanhaixiang.com/linter-tutorial/theory/history.html#stylelint '📖 Linter的故事 | Linter上手完全指南 (yanhaixiang.com)')
+2.  [vue3_admin_template: 此仓库即为贾成豪老师源码仓库 (gitee.com)](https://gitee.com/jch1011/vue3_admin_template-bj1 'vue3_admin_template: 此仓库即为贾成豪老师源码仓库 (gitee.com)')
