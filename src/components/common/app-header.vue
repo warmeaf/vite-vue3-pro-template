@@ -1,19 +1,14 @@
 <template>
   <header class="header">
-    <div class="logo">logo</div>
+    <div class="logo">app头部</div>
   </header>
 </template>
 
 <script setup></script>
 
-<style scoped>
+<style scoped lang="scss">
 .header {
-  font-size: 0;
   padding: 20px 0;
-}
-
-.logo {
-  width: 200px;
-  height: auto;
+  color: $red;
 }
 </style>
