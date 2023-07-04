@@ -55,6 +55,8 @@ export default defineConfig(({ command, mode }) => {
     ],
     // node服务
     server: {
+      open: true,
+      hmr: true,
       proxy: {
         [env.VITE_APP_BASE_API]: {
           //获取数据的服务器地址设置
