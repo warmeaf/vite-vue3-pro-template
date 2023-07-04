@@ -1,4 +1,4 @@
-# README
+# vite-vue3 项目模板
 
 ## 目录
 
@@ -10,6 +10,18 @@
   - [配置 husky](#配置husky)
   - [配置 commitlint](#配置commitlint)
   - [强制使用 pnpm 包管理器工具](#强制使用pnpm包管理器工具)
+- [项目集成](#项目集成)
+  - [element-plus 按需引入](#element-plus按需引入)
+  - [src 别名的配置](#src别名的配置)
+  - [环境变量的配置](#环境变量的配置)
+  - [集成 normalsize](#集成normalsize)
+  - [集成 sass 全局变量](#集成sass全局变量)
+  - [mock 数据](#mock数据)
+  - [axios 二次封装和 API 接口统一管理](#axios二次封装和API接口统一管理)
+  - [配置代理](#配置代理)
+- [项目优化](#项目优化)
+  - [打包体积视图分析](#打包体积视图分析)
+  - [打包去除 console 和 debugger](#打包去除console和debugger)
 - [参考](#参考)
 
 ### 模板技术栈
@@ -18,12 +30,13 @@
 2.  vue3
 3.  JavaScript
 4.  scss
+5.  axios
 
 ### 项目配置
 
 #### 配置 eslint
 
-ESLint 最初是由[Nicholas C. Zakas](http://nczonline.net/ 'Nicholas C. Zakas') 于 2013 年 6 月创建的开源项目。它的目标是提供一个插件化的**javascript 代码检测工具**
+`ESLint`最初是由[Nicholas C. Zakas](http://nczonline.net/ 'Nicholas C. Zakas') 于 2013 年 6 月创建的开源项目。它的目标是提供一个插件化的`javascript`代码检测工具
 
 首先安装`eslint`
 
@@ -423,6 +436,424 @@ pnpm install -D only-allow
 ```
 
 当我们使用`npm`或者`yarn`来安装包的时候，就会报错了。原理就是在`install`的时候会触发`preinstall`（`npm`提供的生命周期钩子）这个文件里面的代码
+
+### 项目集成
+
+#### element-plus 按需引入
+
+首先你需要安装`unplugin-vue-components` 和 `unplugin-auto-import`这两款插件
+
+```javascript
+pnpm install -D unplugin-vue-components unplugin-auto-import
+```
+
+然后配置
+
+```javascript
+// vite.config.js
+import { defineConfig } from 'vite'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+
+export default defineConfig({
+  // ...
+  plugins: [
+    // ...
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
+    }),
+  ],
+})
+```
+
+#### src 别名的配置
+
+在开发项目的时候文件与文件关系可能很复杂，因此我们需要给 src 文件夹配置一个别名
+
+```javascript
+// vite.config.js
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  resolve: {
+    alias: {
+      // 设置别名
+      '@': path.resolve(__dirname, './src'),
+    },
+    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
+  },
+})
+```
+
+#### 环境变量的配置
+
+项目开发过程中，至少会经历开发环境、测试环境和生产环境(即正式环境)三个阶段。不同阶段请求的状态(如接口地址等)不尽相同，若手动切换接口地址是相当繁琐且易出错的。于是环境变量配置的需求就应运而生，我们只需做简单的配置，把环境状态切换的工作交给代码。
+
+项目根目录分别添加 开发、生产和测试环境的文件
+
+```javascript
+.env.development
+.env.production
+.env.test
+```
+
+文件内容
+
+```javascript
+// .env.development
+# 变量必须以 VITE_ 为前缀才能暴露给外部读取
+NODE_ENV = 'development'
+VITE_APP_TITLE = 'vite-vue3项目模板'
+VITE_APP_BASE_API = '/dev-api'
+VITE_SERVE="http://sph-api.atguigu.cn"
+
+```
+
+```javascript
+// .env.production
+NODE_ENV = 'production'
+VITE_APP_TITLE = 'vite-vue3项目模板'
+VITE_APP_BASE_API = '/prod-api'
+VITE_SERVE = 'http://sph-api.atguigu.cn'
+```
+
+```javascript
+// .env.test
+NODE_ENV = 'test'
+VITE_APP_TITLE = 'vite-vue3项目模板'
+VITE_APP_BASE_API = '/test-api'
+VITE_SERVE = 'http://sph-api.atguigu.cn'
+```
+
+访问环境变量，通过 import.meta.env 获取环境变量
+
+```javascript
+const en = import.meta.env.VITE_APP_BASE_API
+console.log(import.meta)
+```
+
+#### 集成 normalsize
+
+安装
+
+```javascript
+pnpm install normalize.css
+```
+
+在`main.js`中引入
+
+```javascript
+import 'normalize.css'
+```
+
+#### 集成 sass 全局变量
+
+在`src/style/variable.scss`创建一个`variable.scss`文件
+
+```sass (scss)
+// scss全局变量
+$red: rgb(255, 0, 0);
+```
+
+在`vite.config.js`文件配置如下:
+
+```javascript
+export default defineConfig((config) => {
+  css: {
+      preprocessorOptions: {
+        scss: {
+          javascriptEnabled: true,
+          additionalData: '@import "./src/styles/variable.scss";',
+        },
+      },
+    },
+  }
+}
+```
+
+这样一来就可以在需要用到的地方使用`$red` 全局变量了，不然会报错。
+
+#### mock 数据
+
+安装
+
+```javascript
+pnpm install -D vite-plugin-mock mockjs
+```
+
+在`vite.config.js` 中配置
+
+```javascript
+import { viteMockServe } from 'vite-plugin-mock'
+
+export default defineConfig(({ command }) => {
+  return {
+    plugins: [
+      viteMockServe({
+        localEnabled: command === 'serve',
+      }),
+    ],
+  }
+})
+```
+
+在根目录创建`mock`文件夹，去创建我们需要`mock`数据与接口
+
+在`mock`文件夹内部创建一个`user.js`文件
+
+```javascript
+//createUserList:次函数执行会返回一个数组,数组里面包含两个用户信息
+function createUserList() {
+  return [
+    {
+      userId: 1,
+      avatar:
+        'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+      username: 'admin',
+      password: '111111',
+      desc: '平台管理员',
+      roles: ['平台管理员'],
+      buttons: ['cuser.detail'],
+      routes: ['home'],
+      token: 'Admin Token',
+    },
+    {
+      userId: 2,
+      avatar:
+        'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+      username: 'system',
+      password: '111111',
+      desc: '系统管理员',
+      roles: ['系统管理员'],
+      buttons: ['cuser.detail', 'cuser.user'],
+      routes: ['home'],
+      token: 'System Token',
+    },
+  ]
+}
+//对外暴露一个数组:数组里面包含两个接口
+//登录假的接口
+//获取用户信息的假的接口
+export default [
+  // 用户登录接口
+  {
+    url: '/api/user/login', //请求地址
+    method: 'post', //请求方式
+    response: ({ body }) => {
+      //获取请求体携带过来的用户名与密码
+      const { username, password } = body
+      //调用获取用户信息函数,用于判断是否有此用户
+      const checkUser = createUserList().find(
+        (item) => item.username === username && item.password === password,
+      )
+      //没有用户返回失败信息
+      if (!checkUser) {
+        return { code: 201, data: { message: '账号或者密码不正确' } }
+      }
+      //如果有返回成功信息
+      const { token } = checkUser
+      return { code: 200, data: { token } }
+    },
+  },
+  // 获取用户信息
+  {
+    url: '/api/user/info',
+    method: 'get',
+    response: (request) => {
+      //获取请求头携带token
+      const token = request.headers.token
+      //查看用户信息是否包含有次token用户
+      const checkUser = createUserList().find((item) => item.token === token)
+      //没有返回失败的信息
+      if (!checkUser) {
+        return { code: 201, data: { message: '获取用户信息失败' } }
+      }
+      //如果有返回成功信息
+      return { code: 200, data: { checkUser } }
+    },
+  },
+]
+```
+
+安装 axios
+
+```javascript
+pnpm install axios
+
+```
+
+最后通过 axios 测试接口
+
+```javascript
+<script setup>
+import axios from 'axios'
+axios
+  .post('/api/user/login', {
+    username: 'admin',
+    password: '111111',
+  })
+  .then((res) => {
+    console.log(res)
+  })
+</script>
+```
+
+#### axios 二次封装和 API 接口统一管理
+
+把 axios 进行二次封装
+
+在根目录下创建 utils/request.js
+
+```javascript
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
+//创建axios实例
+let request = axios.create({
+  baseURL: import.meta.env.VITE_APP_BASE_API,
+  timeout: 5000,
+})
+//请求拦截器
+request.interceptors.request.use((config) => {
+  return config
+})
+//响应拦截器
+request.interceptors.response.use(
+  (response) => {
+    return response.data
+  },
+  (error) => {
+    //处理网络错误
+    let msg = ''
+    let status = error.response.status
+    switch (status) {
+      case 401:
+        msg = 'token过期'
+        break
+      case 403:
+        msg = '无权访问'
+        break
+      case 404:
+        msg = '请求地址错误'
+        break
+      case 500:
+        msg = '服务器出现问题'
+        break
+      default:
+        msg = '无网络'
+    }
+    ElMessage({
+      type: 'error',
+      message: msg,
+    })
+    return Promise.reject(error)
+  },
+)
+export default request
+```
+
+在 src 目录下去创建 api 文件夹去统一管理项目的接口
+
+```javascript
+import request from '@/utils/request'
+
+//登录接口
+export const reqLogin = (data) => request.post('/admin/acl/index/login', data)
+
+//获取用户信息
+export const reqUserInfo = () => request.get('/admin/acl/index/info')
+
+//退出登录
+export const reqLogout = () => request.post('/admin/acl/index/logout')
+```
+
+#### 配置代理
+
+```javascript
+import { defineConfig, loadEnv } from 'vite'
+
+export default defineConfig(({ command, mode }) => {
+  //获取各种环境下的对应的变量
+  const env = loadEnv(mode, process.cwd())
+  return {
+    // node服务
+    server: {
+      proxy: {
+        [env.VITE_APP_BASE_API]: {
+          //获取数据的服务器地址设置
+          target: env.VITE_SERVE,
+          //需要代理跨域
+          changeOrigin: true,
+          //路径重写
+          rewrite: (path) =>
+            path.replace(new RegExp(`^${env.VITE_APP_BASE_API}`), ''),
+        },
+      },
+    },
+  }
+})
+```
+
+发起请求
+
+```javascript
+<script setup>
+import { reqLogin } from '@/api/user'
+async function userLogin(data) {
+  data = {
+    username: 'admin',
+    password: '111111',
+  }
+  const res = await reqLogin(data)
+  console.log(res)
+}
+</script>
+```
+
+### 项目优化
+
+#### 打包体积视图分析
+
+安装
+
+```javascript
+pnpm install rollup-plugin-visualizer -D
+```
+
+在`vite.config.js`中配置
+
+```javascript
+import { visualizer } from 'rollup-plugin-visualizer'
+
+export default defineConfig({
+  plugins: [
+    // 打包体积视图分析
+    visualizer({
+      gzipSize: true,
+      brotliSize: true,
+      emitFile: false,
+      filename: 'test.html', //分析图生成的文件名
+      open: true, //如果存在本地服务端口，将在打包后自动展示
+    }),
+  ],
+})
+```
+
+#### 打包去除 console 和 debugger
+
+在`vite.config.js`中配置
+
+```javascript
+export default defineConfig({
+  esbuild: {
+    // 打包去除console和debugger
+    drop: ['console', 'debugger'],
+  }
+)
+```
 
 ### 参考
 
